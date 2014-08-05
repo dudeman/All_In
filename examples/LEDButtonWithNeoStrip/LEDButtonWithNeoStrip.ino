@@ -54,15 +54,15 @@ void render() {
 
 void checkButton() {
   int reading = digitalRead(BUTTON_PIN);
-  // check to see if you just pressed the button 
-  // (i.e. the input went from LOW to HIGH),  and you've waited 
-  // long enough since the last press to ignore any noise:  
+  // check to see if you just pressed the button
+  // (i.e. the input went from LOW to HIGH),  and you've waited
+  // long enough since the last press to ignore any noise:
 
   // If the switch changed, due to noise or pressing:
   if (reading != lastButtonState) {
     // reset the debouncing timer
     lastDebounceTime = millis();
-  } 
+  }
   if ((millis() - lastDebounceTime) > debounceDelay) {
     // if the button state has changed:
     if (reading != buttonState) {
