@@ -81,11 +81,10 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_COUNT, STRIP_PIN, NEO_GRB + NEO_
 
 void update() {
   static long lastDebounceTime = 0;
-  static int lastState = 0;
+  static int prevState = 0;
   static int state = 0;
   static int ticks = 0;
   //determine state
-  int framerate = map(analogRead(1), 0, 1023, 10, 100);
   int buttonsOn = 0;
   for(int i=0; i < input::BUTTON_COUNT; i++) {
     if (input::buttons[i].on) {
@@ -93,6 +92,12 @@ void update() {
     }
   }
 
+  if(buttonsOn != state) {
+    state = buttonsOn;
+  }
+
+  int framerate = map(analogRead(1), 0, 1023, 10, 100);
+  // framerate *= (input::BUTTON_COUNT - buttonsOn) / input::BUTTON_COUNT;
   // control the update framerate
   if ((millis() - lastDebounceTime) > framerate) {
     lastDebounceTime = millis();
