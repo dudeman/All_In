@@ -91,20 +91,28 @@ void update() {
     }
   }
   if(buttonsOn > 0) {
-    int px = ticks % LED_COUNT;
-    for(uint16_t i=0; i<strip.numPixels(); i++) {
-      if(i == px) {
-        strip.setPixelColor(i, strip.Color(0, 0, 100));
-      } else {
-        strip.setPixelColor(i, strip.Color(0, 0, 0));
-      }
-    }
+    updateStrip(ticks);
   } else {
-    for(uint16_t i=0; i<strip.numPixels(); i++) {
-     strip.setPixelColor(i, strip.Color(0, 0, 0));
-   }
+    clearStrip();
   }
   ticks++;
+}
+
+void updateStrip(int ticks) {
+  int px = ticks % LED_COUNT;
+  for(uint16_t i=0; i<strip.numPixels(); i++) {
+    if(i == px) {
+      strip.setPixelColor(i, strip.Color(0, 0, 100));
+    } else {
+      strip.setPixelColor(i, strip.Color(0, 0, 0));
+    }
+  }
+}
+
+void clearStrip() {
+  for(uint16_t i=0; i<strip.numPixels(); i++) {
+   strip.setPixelColor(i, strip.Color(0, 0, 0));
+  }
 }
 
 void render() {
