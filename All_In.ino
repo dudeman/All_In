@@ -6,7 +6,6 @@ const long DEBOUNCE_DELAY = 50;    // the debounce time; increase if the output 
 const int LED_COUNT = 16;
 const int STRIP_PIN = 6;
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_COUNT, STRIP_PIN, NEO_GRB + NEO_KHZ800);
-uint32_t lastButtonColor;
 
 namespace input {
   const int BUTTON_COUNT = 2;
@@ -23,12 +22,15 @@ namespace input {
     bool on;
     long lastDebounceTime;
     uint32_t color;
+    int ledPosition;
   } Button;
 
   Button buttons[input::BUTTON_COUNT] = {
-    {12, 5, LOW, LOW, false, 0, COLOR_GREEN},
-    {3, 4, LOW, LOW, false, 0, COLOR_WHITE}
+    {12, 5, LOW, LOW, false, 0, COLOR_GREEN, 3},
+    {3, 4, LOW, LOW, false, 0, COLOR_WHITE, 7}
   };
+  
+  Button lastButtonPressed;
 
   void setup(Button button) {
     pinMode(button.ledPin, OUTPUT);
@@ -60,7 +62,7 @@ namespace input {
           button->on = !button->on;
           if(button->on) {
             digitalWrite(button->ledPin, HIGH);
-            lastButtonColor = button->color;
+            lastButtonPressed = *button;
           } else {
             digitalWrite(button->ledPin, LOW);
           }
@@ -118,12 +120,20 @@ void update() {
 
 void updateStrip(int ticks) {
   int px = ticks % LED_COUNT;
-  for(uint16_t i=0; i<strip.numPixels(); i++) {
+  for(uint16_t i=0; i<LED_COUNT; i++) {
     if(i == px) {
-      strip.setPixelColor(i, lastButtonColor);
+      strip.setPixelColor(offsetPixelLocation(i+input::lastButtonPressed.ledPosition), input::lastButtonPressed.color);
     } else {
-      strip.setPixelColor(i, strip.Color(0, 0, 0));
+      strip.setPixelColor(offsetPixelLocation(i+input::lastButtonPressed.ledPosition), strip.Color(0, 0, 0));
     }
+  }
+}
+
+int offsetPixelLocation(int offsetPosition) {
+  if(offsetPosition > LED_COUNT) {
+    return offsetPosition - LED_COUNT;
+  } else {
+    return offsetPosition; 
   }
 }
 
