@@ -32,44 +32,49 @@ namespace input {
     Serial.println(button.inputPin);
   }
 
-  void read(Button button) {
-    int reading = digitalRead(button.inputPin);
-    Serial.println("button read: " + reading == LOW ? "LOW" : "HIGH");
+  void read(Button *button) {
+    int reading = digitalRead(button->inputPin);
+    // Serial.print("button read: ");
+    // Serial.println(button.inputPin);
+    // Serial.print(reading);
     // check to see if you just pressed the button
     // (i.e. the input went from LOW to HIGH),  and you've waited
     // long enough since the last press to ignore any noise:
 
     // If the switch changed, due to noise or pressing:
-    if (reading != button.lastDebounceTime) {
+    if (reading != button->prevState) {
       // reset the debouncing timer
-      button.lastDebounceTime = millis();
+      Serial.print("prev state ");
+      Serial.println(button->prevState);
+
+      button->lastDebounceTime = millis();
     }
-    if ((millis() - button.lastDebounceTime) > DEBOUNCE_DELAY) {
+    if ((millis() - button->lastDebounceTime) > DEBOUNCE_DELAY) {
       // Serial.println("button debounce ");
       // if the button state has changed:
-      if (reading != button.state) {
+      if (reading != button->state) {
         Serial.println("button change ");
-        button.state = reading;
+        button->state = reading;
         // only toggle the button if the new button state is HIGH
-        if (button.state == HIGH) {
-          button.on = !button.on;
-          if(button.on) {
-            digitalWrite(button.ledPin, HIGH);
+        if (button->state == HIGH) {
+          button->on = !button->on;
+          if(button->on) {
+            digitalWrite(button->ledPin, HIGH);
           } else {
-            digitalWrite(button.ledPin, LOW);
+            digitalWrite(button->ledPin, LOW);
           }
           Serial.print("button toggle: ");
-          Serial.print(button.inputPin);
-          Serial.println(button.on ? "true" : "false");
+          Serial.print(button->inputPin);
+          Serial.println(button->on ? "true" : "false");
         }
       }
     }
-    button.prevState = reading;
+    button->prevState = reading;
   }
 
   void readButtons() {
     for(int i=0; i < input::BUTTON_COUNT; i++) {
-      input::read(buttons[i]);
+      input::read(&buttons[i]);
     }
   }
 }
