@@ -8,7 +8,6 @@ const int STRIP_PIN = 6;
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_COUNT, STRIP_PIN, NEO_GRB + NEO_KHZ800);
 
 namespace input {
-  const int BUTTON_COUNT = 2;
   const uint32_t COLOR_GREEN = strip.Color(0, 255, 0);
   const uint32_t COLOR_RED = strip.Color(255, 0, 0);
   const uint32_t COLOR_BLUE = strip.Color(0, 0, 255);
@@ -25,9 +24,20 @@ namespace input {
     int ledPosition;
   } Button;
 
+  const int BUTTON_COUNT = 12;
   Button buttons[input::BUTTON_COUNT] = {
-    {12, 5, LOW, LOW, false, 0, COLOR_GREEN, 3},
-    {3, 4, LOW, LOW, false, 0, COLOR_WHITE, 10}
+    {22, 23, LOW, LOW, false, 0, COLOR_GREEN, 3},
+    {24, 25, LOW, LOW, false, 0, COLOR_BLUE, 10},
+    {26, 27, LOW, LOW, false, 0, COLOR_RED, 10},
+    {28, 29, LOW, LOW, false, 0, COLOR_WHITE, 10},
+    {30, 31, LOW, LOW, false, 0, COLOR_GREEN, 10},
+    {32, 33, LOW, LOW, false, 0, COLOR_BLUE, 10},
+    {34, 35, LOW, LOW, false, 0, COLOR_RED, 10},
+    {36, 37, LOW, LOW, false, 0, COLOR_WHITE, 10},
+    {38, 39, LOW, LOW, false, 0, COLOR_GREEN, 10},
+    {40, 41, LOW, LOW, false, 0, COLOR_BLUE, 10},
+    {42, 43, LOW, LOW, false, 0, COLOR_RED, 10},
+    {44, 45, LOW, LOW, false, 0, COLOR_WHITE, 10}
   };
 
   Button lastButtonPressed;
