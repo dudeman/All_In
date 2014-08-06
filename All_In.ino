@@ -109,8 +109,10 @@ void update() {
   // control the update framerate
   if ((millis() - lastDebounceTime) > framerate) {
     lastDebounceTime = millis();
-    if(buttonsOn > 0) {
-      updateStrip(ticks);
+    if(buttonsOn > 1) {
+      callAnimation(ticks);
+    } else if(buttonsOn > 0) {
+      allInAnimation(ticks);
     } else {
       clearStrip();
     }
@@ -118,11 +120,14 @@ void update() {
   }
 }
 
-void updateStrip(int ticks) {
+void allInAnimation(int ticks) {
   int px = ticks % LED_COUNT;
   clearStrip();
   for(uint16_t i=0; i<LED_COUNT; i++) {
-    if(i == px) {
+    if(ticks < 16) {
+      strip.setBrightness(16 * ticks+1 % 256);
+      strip.setPixelColor(i, input::lastButtonPressed.color);
+    } else if(i == px) {
       strip.setPixelColor(offsetPixelLocation(i+input::lastButtonPressed.ledPosition), input::lastButtonPressed.color);
     } else if(i == px-1) {
       strip.setPixelColor(offsetPixelLocation(i+input::lastButtonPressed.ledPosition), reduceBrightness(input::lastButtonPressed.color, 3));
@@ -133,6 +138,14 @@ void updateStrip(int ticks) {
     } else if(i == px-4) {
       strip.setPixelColor(offsetPixelLocation(i+input::lastButtonPressed.ledPosition), reduceBrightness(input::lastButtonPressed.color, 4));
     }
+  }
+}
+
+void callAnimation(int ticks) {
+  int color = ticks % 256;
+  clearStrip();
+  for(uint16_t i=0; i<LED_COUNT; i++) {
+    strip.setPixelColor(i, wheel((i+color) & 255));
   }
 }
 
@@ -177,6 +190,20 @@ uint32_t reduceBrightness(uint32_t c, int factor) {
   // Serial.println(b);
 
   return strip.Color(r, g, b);
+}
+
+// Input a value 0 to 255 to get a color value.
+// The colours are a transition r - g - b - back to r.
+uint32_t wheel(byte WheelPos) {
+  if(WheelPos < 85) {
+   return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
+  } else if(WheelPos < 170) {
+   WheelPos -= 85;
+   return strip.Color(255 - WheelPos * 3, 0, WheelPos * 3);
+  } else {
+   WheelPos -= 170;
+   return strip.Color(0, WheelPos * 3, 255 - WheelPos * 3);
+  }
 }
 
 void clearStrip() {
