@@ -3,12 +3,17 @@
 const unsigned int BAUD_RATE = 9600;
 const long DEBOUNCE_DELAY = 50;    // the debounce time; increase if the output flickers
 
+const int LED_COUNT = 16;
+const int STRIP_PIN = 6;
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_COUNT, STRIP_PIN, NEO_GRB + NEO_KHZ800);
+uint32_t lastButtonColor;
+
 namespace input {
-  const int BUTTON_COUNT = 1;
-  const int COLOR_GREEN = 1;
-  const int COLOR_RED = 2;
-  const int COLOR_BLUE = 3;
-  const int COLOR_WHITE = 4;
+  const int BUTTON_COUNT = 2;
+  const uint32_t COLOR_GREEN = strip.Color(0, 255, 0);
+  const uint32_t COLOR_RED = strip.Color(255, 0, 0);
+  const uint32_t COLOR_BLUE = strip.Color(0, 0, 255);
+  const uint32_t COLOR_WHITE = strip.Color(255, 255, 255);
 
   typedef struct {
     int inputPin;
@@ -17,12 +22,12 @@ namespace input {
     int prevState;
     bool on;
     long lastDebounceTime;
-    int color;
+    uint32_t color;
   } Button;
 
   Button buttons[input::BUTTON_COUNT] = {
-    {12, 5, LOW, LOW, false, 0, COLOR_WHITE}//,
-    // {3, 4, LOW, LOW, false, 0, COLOR_BLUE}
+    {12, 5, LOW, LOW, false, 0, COLOR_GREEN},
+    {3, 4, LOW, LOW, false, 0, COLOR_WHITE}
   };
 
   void setup(Button button) {
@@ -55,6 +60,7 @@ namespace input {
           button->on = !button->on;
           if(button->on) {
             digitalWrite(button->ledPin, HIGH);
+            lastButtonColor = button->color;
           } else {
             digitalWrite(button->ledPin, LOW);
           }
@@ -74,9 +80,7 @@ namespace input {
   }
 }
 
-const int LED_COUNT = 16;
-const int STRIP_PIN = 6;
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_COUNT, STRIP_PIN, NEO_GRB + NEO_KHZ800);
+
 
 
 void update() {
@@ -116,7 +120,7 @@ void updateStrip(int ticks) {
   int px = ticks % LED_COUNT;
   for(uint16_t i=0; i<strip.numPixels(); i++) {
     if(i == px) {
-      strip.setPixelColor(i, strip.Color(0, 0, 100));
+      strip.setPixelColor(i, lastButtonColor);
     } else {
       strip.setPixelColor(i, strip.Color(0, 0, 0));
     }
