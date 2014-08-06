@@ -27,9 +27,9 @@ namespace input {
 
   Button buttons[input::BUTTON_COUNT] = {
     {12, 5, LOW, LOW, false, 0, COLOR_GREEN, 3},
-    {3, 4, LOW, LOW, false, 0, COLOR_WHITE, 7}
+    {3, 4, LOW, LOW, false, 0, COLOR_WHITE, 10}
   };
-  
+
   Button lastButtonPressed;
 
   void setup(Button button) {
@@ -120,11 +120,18 @@ void update() {
 
 void updateStrip(int ticks) {
   int px = ticks % LED_COUNT;
+  clearStrip();
   for(uint16_t i=0; i<LED_COUNT; i++) {
     if(i == px) {
       strip.setPixelColor(offsetPixelLocation(i+input::lastButtonPressed.ledPosition), input::lastButtonPressed.color);
-    } else {
-      strip.setPixelColor(offsetPixelLocation(i+input::lastButtonPressed.ledPosition), strip.Color(0, 0, 0));
+    } else if(i == px-1) {
+      strip.setPixelColor(offsetPixelLocation(i+input::lastButtonPressed.ledPosition), reduceBrightness(input::lastButtonPressed.color, 3));
+    } else if(i == px-2) {
+      strip.setPixelColor(offsetPixelLocation(i+input::lastButtonPressed.ledPosition), reduceBrightness(input::lastButtonPressed.color, 4));
+    } else if(i == px-3) {
+      strip.setPixelColor(offsetPixelLocation(i+input::lastButtonPressed.ledPosition), reduceBrightness(input::lastButtonPressed.color, 4));
+    } else if(i == px-4) {
+      strip.setPixelColor(offsetPixelLocation(i+input::lastButtonPressed.ledPosition), reduceBrightness(input::lastButtonPressed.color, 4));
     }
   }
 }
@@ -132,9 +139,44 @@ void updateStrip(int ticks) {
 int offsetPixelLocation(int offsetPosition) {
   if(offsetPosition > LED_COUNT) {
     return offsetPosition - LED_COUNT;
+  } else if(offsetPosition < 0) {
+    return LED_COUNT - offsetPosition;
   } else {
-    return offsetPosition; 
+    return offsetPosition;
   }
+}
+
+uint32_t reduceBrightness(uint32_t c, int factor) {
+  uint8_t
+    r = (uint8_t)(c >> 16),
+    g = (uint8_t)(c >>  8),
+    b = (uint8_t)c;
+
+  factor = 60 * factor;
+
+  // Serial.print("before: ");
+  // Serial.print("r: ");
+  // Serial.print(r);
+  // Serial.print("g: ");
+  // Serial.print(g);
+  // Serial.print("b: ");
+  // Serial.print(b);
+  // Serial.print("factor: ");
+  // Serial.println(factor);
+
+  r = (r - factor < 0) ? 0 : r - factor;
+  g = (g - factor < 0) ? 0 : g - factor;
+  b = (b - factor < 0) ? 0 : b - factor;
+
+  // Serial.print("after: ");
+  // Serial.print("r: ");
+  // Serial.print(r);
+  // Serial.print("g: ");
+  // Serial.print(g);
+  // Serial.print("b: ");
+  // Serial.println(b);
+
+  return strip.Color(r, g, b);
 }
 
 void clearStrip() {
