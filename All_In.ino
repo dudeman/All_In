@@ -123,9 +123,11 @@ void update() {
 void allInAnimation(int ticks) {
   int px = ticks % LED_COUNT;
   clearStrip();
+  if(ticks < 32) {
+    strip.setBrightness(8 * ticks+1 % 256);
+  }
   for(uint16_t i=0; i<LED_COUNT; i++) {
-    if(ticks < 16) {
-      strip.setBrightness(16 * ticks+1 % 256);
+    if(ticks < 32 && i % 2 == px % 2) {
       strip.setPixelColor(i, input::lastButtonPressed.color);
     } else if(i == px) {
       strip.setPixelColor(offsetPixelLocation(i+input::lastButtonPressed.ledPosition), input::lastButtonPressed.color);
@@ -143,9 +145,17 @@ void allInAnimation(int ticks) {
 
 void callAnimation(int ticks) {
   int color = ticks % 256;
+  int px = ticks % LED_COUNT;
   clearStrip();
   for(uint16_t i=0; i<LED_COUNT; i++) {
-    strip.setPixelColor(i, wheel((i+color) & 255));
+    //strip.setPixelColor(i, wheel((i+color) & 255));
+    for(int j=0; j < input::BUTTON_COUNT; j++) {
+      if (input::buttons[j].on) {
+        if(i == px) {
+          strip.setPixelColor(offsetPixelLocation(i+input::buttons[j].ledPosition), input::buttons[j].color);
+        }
+      }
+    }
   }
 }
 
