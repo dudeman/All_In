@@ -44,16 +44,11 @@ namespace input {
     // If the switch changed, due to noise or pressing:
     if (reading != button->prevState) {
       // reset the debouncing timer
-      Serial.print("prev state ");
-      Serial.println(button->prevState);
-
       button->lastDebounceTime = millis();
     }
     if ((millis() - button->lastDebounceTime) > DEBOUNCE_DELAY) {
-      // Serial.println("button debounce ");
       // if the button state has changed:
       if (reading != button->state) {
-        Serial.println("button change ");
         button->state = reading;
         // only toggle the button if the new button state is HIGH
         if (button->state == HIGH) {
@@ -98,20 +93,23 @@ void update() {
   if(buttonsOn > 0) {
     int px = ticks % LED_COUNT;
     for(uint16_t i=0; i<strip.numPixels(); i++) {
-      // Serial.println('rendering px');
       if(i == px) {
         strip.setPixelColor(i, strip.Color(0, 0, 100));
       } else {
         strip.setPixelColor(i, strip.Color(0, 0, 0));
       }
     }
+  } else {
+    for(uint16_t i=0; i<strip.numPixels(); i++) {
+     strip.setPixelColor(i, strip.Color(0, 0, 0));
+   }
   }
   ticks++;
 }
 
 void render() {
   strip.show();
-  // delay(100);
+  delay(100);
 }
 
 
