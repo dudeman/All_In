@@ -3,7 +3,7 @@
 const unsigned int BAUD_RATE = 9600;
 const long DEBOUNCE_DELAY = 50;    // the debounce time; increase if the output flickers
 
-const int LED_COUNT = 16;
+const int LED_COUNT = 240;
 const int STRIP_PIN = 6;
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_COUNT, STRIP_PIN, NEO_GRB + NEO_KHZ800);
 
@@ -26,18 +26,18 @@ namespace input {
 
   const int BUTTON_COUNT = 12;
   Button buttons[input::BUTTON_COUNT] = {
-    {22, 23, LOW, LOW, false, 0, COLOR_GREEN, 3},
-    {24, 25, LOW, LOW, false, 0, COLOR_BLUE, 10},
-    {26, 27, LOW, LOW, false, 0, COLOR_RED, 10},
+    {22, 23, LOW, LOW, false, 0, COLOR_BLUE, 210},
+    {24, 25, LOW, LOW, false, 0, COLOR_GREEN, -30},
+    {26, 27, LOW, LOW, false, 0, COLOR_RED, -4},
     {28, 29, LOW, LOW, false, 0, COLOR_WHITE, 10},
-    {30, 31, LOW, LOW, false, 0, COLOR_GREEN, 10},
-    {32, 33, LOW, LOW, false, 0, COLOR_BLUE, 10},
-    {34, 35, LOW, LOW, false, 0, COLOR_RED, 10},
-    {36, 37, LOW, LOW, false, 0, COLOR_WHITE, 10},
-    {38, 39, LOW, LOW, false, 0, COLOR_GREEN, 10},
-    {40, 41, LOW, LOW, false, 0, COLOR_BLUE, 10},
-    {42, 43, LOW, LOW, false, 0, COLOR_RED, 10},
-    {44, 45, LOW, LOW, false, 0, COLOR_WHITE, 10}
+    {30, 31, LOW, LOW, false, 0, COLOR_BLUE, 36},
+    {32, 33, LOW, LOW, false, 0, COLOR_GREEN, 64},
+    {34, 35, LOW, LOW, false, 0, COLOR_RED, 80},
+    {36, 37, LOW, LOW, false, 0, COLOR_WHITE, 102},
+    {38, 39, LOW, LOW, false, 0, COLOR_BLUE, 120},
+    {40, 41, LOW, LOW, false, 0, COLOR_GREEN, 144},
+    {42, 43, LOW, LOW, false, 0, COLOR_RED, 172},
+    {44, 45, LOW, LOW, false, 0, COLOR_WHITE, 200}
   };
 
   Button lastButtonPressed;
@@ -45,8 +45,8 @@ namespace input {
   void setup(Button button) {
     pinMode(button.ledPin, OUTPUT);
     // pinMode(button.inputPin, INPUT);
-    Serial.print("button setup: ");
-    Serial.println(button.inputPin);
+    // Serial.print("button setup: ");
+    // Serial.println(button.inputPin);
   }
 
   void read(Button *button) {
@@ -76,9 +76,9 @@ namespace input {
           } else {
             digitalWrite(button->ledPin, LOW);
           }
-          Serial.print("button toggle: ");
-          Serial.print(button->inputPin);
-          Serial.println(button->on ? "true" : "false");
+          // Serial.print("button toggle: ");
+          // Serial.print(button->inputPin);
+          // Serial.println(button->on ? "true" : "false");
         }
       }
     }
@@ -100,7 +100,8 @@ void update() {
   static int prevState = 0;
   static int ticks = 0;
   int buttonsOn = 0;
-  int framerate = map(analogRead(1), 0, 1023, 10, 100);
+  // int framerate = map(analogRead(1), 0, 1023, 10, 100);
+  int framerate = 5;
 
   //determine state
   for(int i=0; i < input::BUTTON_COUNT; i++) {
@@ -142,12 +143,18 @@ void allInAnimation(int ticks) {
     } else if(i == px) {
       strip.setPixelColor(offsetPixelLocation(i+input::lastButtonPressed.ledPosition), input::lastButtonPressed.color);
     } else if(i == px-1) {
-      strip.setPixelColor(offsetPixelLocation(i+input::lastButtonPressed.ledPosition), reduceBrightness(input::lastButtonPressed.color, 3));
+      strip.setPixelColor(offsetPixelLocation(i+input::lastButtonPressed.ledPosition), reduceBrightness(input::lastButtonPressed.color, 2));
     } else if(i == px-2) {
-      strip.setPixelColor(offsetPixelLocation(i+input::lastButtonPressed.ledPosition), reduceBrightness(input::lastButtonPressed.color, 4));
+      strip.setPixelColor(offsetPixelLocation(i+input::lastButtonPressed.ledPosition), reduceBrightness(input::lastButtonPressed.color, 2));
     } else if(i == px-3) {
-      strip.setPixelColor(offsetPixelLocation(i+input::lastButtonPressed.ledPosition), reduceBrightness(input::lastButtonPressed.color, 4));
+      strip.setPixelColor(offsetPixelLocation(i+input::lastButtonPressed.ledPosition), reduceBrightness(input::lastButtonPressed.color, 3));
     } else if(i == px-4) {
+      strip.setPixelColor(offsetPixelLocation(i+input::lastButtonPressed.ledPosition), reduceBrightness(input::lastButtonPressed.color, 3));
+    } else if(i == px-5) {
+      strip.setPixelColor(offsetPixelLocation(i+input::lastButtonPressed.ledPosition), reduceBrightness(input::lastButtonPressed.color, 4));
+    } else if(i == px-6) {
+      strip.setPixelColor(offsetPixelLocation(i+input::lastButtonPressed.ledPosition), reduceBrightness(input::lastButtonPressed.color, 4));
+    } else if(i == px-7) {
       strip.setPixelColor(offsetPixelLocation(i+input::lastButtonPressed.ledPosition), reduceBrightness(input::lastButtonPressed.color, 4));
     }
   }
@@ -244,7 +251,7 @@ void render() {
  *****/
 
 void setup() {
-  Serial.begin(BAUD_RATE);
+  // Serial.begin(BAUD_RATE);
   for(int i=0; i < input::BUTTON_COUNT; i++) {
       input::setup(input::buttons[i]);
   }
