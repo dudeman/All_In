@@ -101,12 +101,15 @@ void update() {
   static int ticks = 0;
   int buttonsOn = 0;
   // int framerate = map(analogRead(1), 0, 1023, 10, 100);
-  int framerate = 5;
+  int framerate = 6;
 
   //determine state
   for(int i=0; i < input::BUTTON_COUNT; i++) {
     if (input::buttons[i].on) {
       buttonsOn++;
+      if (framerate > 0) {
+        framerate -= 1;
+      }
     }
   }
 
@@ -120,10 +123,8 @@ void update() {
   // control the update framerate
   if ((millis() - lastDebounceTime) > framerate) {
     lastDebounceTime = millis();
-    if(buttonsOn > 1) {
-      callAnimation(ticks);
-    } else if(buttonsOn > 0) {
-      allInAnimation(ticks);
+    if(buttonsOn > 0) {
+      allInAnimation(ticks, buttonsOn);
     } else {
       clearStrip();
     }
@@ -131,31 +132,39 @@ void update() {
   }
 }
 
-void allInAnimation(int ticks) {
+void allInAnimation(int ticks, int buttonsOn) {
+  int color = ticks % 256;
   int px = ticks % LED_COUNT;
   clearStrip();
   if(ticks < 32) {
     strip.setBrightness(8 * ticks+1 % 256);
   }
   for(uint16_t i=0; i<LED_COUNT; i++) {
-    if(ticks < 32 && i % 2 == px % 2) {
-      strip.setPixelColor(i, input::lastButtonPressed.color);
-    } else if(i == px) {
-      strip.setPixelColor(offsetPixelLocation(i+input::lastButtonPressed.ledPosition), input::lastButtonPressed.color);
-    } else if(i == px-1) {
-      strip.setPixelColor(offsetPixelLocation(i+input::lastButtonPressed.ledPosition), reduceBrightness(input::lastButtonPressed.color, 2));
-    } else if(i == px-2) {
-      strip.setPixelColor(offsetPixelLocation(i+input::lastButtonPressed.ledPosition), reduceBrightness(input::lastButtonPressed.color, 2));
-    } else if(i == px-3) {
-      strip.setPixelColor(offsetPixelLocation(i+input::lastButtonPressed.ledPosition), reduceBrightness(input::lastButtonPressed.color, 3));
-    } else if(i == px-4) {
-      strip.setPixelColor(offsetPixelLocation(i+input::lastButtonPressed.ledPosition), reduceBrightness(input::lastButtonPressed.color, 3));
-    } else if(i == px-5) {
-      strip.setPixelColor(offsetPixelLocation(i+input::lastButtonPressed.ledPosition), reduceBrightness(input::lastButtonPressed.color, 4));
-    } else if(i == px-6) {
-      strip.setPixelColor(offsetPixelLocation(i+input::lastButtonPressed.ledPosition), reduceBrightness(input::lastButtonPressed.color, 4));
-    } else if(i == px-7) {
-      strip.setPixelColor(offsetPixelLocation(i+input::lastButtonPressed.ledPosition), reduceBrightness(input::lastButtonPressed.color, 4));
+    if(buttonsOn > 1) {
+      strip.setPixelColor(i, wheel((i+color) & 255));
+    }
+    for(int j=0; j < input::BUTTON_COUNT; j++) {
+      if (input::buttons[j].on) {
+        if(ticks < 32 && i % 2 == px % 2) {
+          strip.setPixelColor(i, input::buttons[j].color);
+        } else if(i == px) {
+          strip.setPixelColor(offsetPixelLocation(i+input::buttons[j].ledPosition), input::buttons[j].color);
+        } else if(i == px-1) {
+          strip.setPixelColor(offsetPixelLocation(i+input::buttons[j].ledPosition), reduceBrightness(input::buttons[j].color, 2));
+        } else if(i == px-2) {
+          strip.setPixelColor(offsetPixelLocation(i+input::buttons[j].ledPosition), reduceBrightness(input::buttons[j].color, 2));
+        } else if(i == px-3) {
+          strip.setPixelColor(offsetPixelLocation(i+input::buttons[j].ledPosition), reduceBrightness(input::buttons[j].color, 3));
+        } else if(i == px-4) {
+          strip.setPixelColor(offsetPixelLocation(i+input::buttons[j].ledPosition), reduceBrightness(input::buttons[j].color, 3));
+        } else if(i == px-5) {
+          strip.setPixelColor(offsetPixelLocation(i+input::buttons[j].ledPosition), reduceBrightness(input::buttons[j].color, 4));
+        } else if(i == px-6) {
+          strip.setPixelColor(offsetPixelLocation(i+input::buttons[j].ledPosition), reduceBrightness(input::buttons[j].color, 4));
+        } else if(i == px-7) {
+          strip.setPixelColor(offsetPixelLocation(i+input::buttons[j].ledPosition), reduceBrightness(input::buttons[j].color, 4));
+        }
+      }
     }
   }
 }
