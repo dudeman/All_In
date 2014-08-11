@@ -3,7 +3,7 @@
 const unsigned int BAUD_RATE = 9600;
 const long DEBOUNCE_DELAY = 50;    // the debounce time; increase if the output flickers
 
-const int LED_COUNT = 240;
+const int LED_COUNT = 270;
 const int STRIP_PIN = 6;
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_COUNT, STRIP_PIN, NEO_GRB + NEO_KHZ800);
 
