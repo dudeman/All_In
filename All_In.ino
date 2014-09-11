@@ -105,9 +105,9 @@ void update() {
   for(int i=0; i < input::BUTTON_COUNT; i++) {
     if (input::buttons[i].on) {
       buttonsOn++;
-      if (framerate > 0) {
-        framerate -= 1;
-      }
+      // if (framerate > 0) {
+      //   framerate -= 1;
+      // }
     }
   }
 
@@ -142,47 +142,52 @@ void allInAnimation(int ticks, int buttonsOn) {
   if(ticks < fadeInInterval) {
     strip.setBrightness((256 / fadeInInterval) * ticks+1 % 256);
   }
-  for(uint16_t i=0; i<LED_COUNT; i++) {
-    if(buttonsOn > 1) {
+
+  if(buttonsOn > 1 && ticks >= fadeInInterval) {
+    for(uint16_t i=0; i<LED_COUNT; i++) {
       strip.setPixelColor(i, wheel((i+color) & 255));
     }
+  }
+
+  for(uint16_t i=0; i<LED_COUNT; i++) {
     for(int j=0; j < input::BUTTON_COUNT; j++) {
       if (input::buttons[j].on) {
-        if(ticks < 32 && i % 2 == px % 2) {
         if(ticks < fadeInInterval && i % 2 == px % 2) {
           strip.setPixelColor(i, input::buttons[j].color);
-        } else if(i == px) {
-          strip.setPixelColor(offsetPixelLocation(i+input::buttons[j].ledPosition), input::buttons[j].color);
-        } else if(i == px-1) {
-          strip.setPixelColor(offsetPixelLocation(i+input::buttons[j].ledPosition), reduceBrightness(input::buttons[j].color, 2));
-        } else if(i == px-2) {
-          strip.setPixelColor(offsetPixelLocation(i+input::buttons[j].ledPosition), reduceBrightness(input::buttons[j].color, 2));
-        } else if(i == px-3) {
-          strip.setPixelColor(offsetPixelLocation(i+input::buttons[j].ledPosition), reduceBrightness(input::buttons[j].color, 3));
-        } else if(i == px-4) {
-          strip.setPixelColor(offsetPixelLocation(i+input::buttons[j].ledPosition), reduceBrightness(input::buttons[j].color, 3));
-        } else if(i == px-5) {
-          strip.setPixelColor(offsetPixelLocation(i+input::buttons[j].ledPosition), reduceBrightness(input::buttons[j].color, 4));
-        } else if(i == px-6) {
-          strip.setPixelColor(offsetPixelLocation(i+input::buttons[j].ledPosition), reduceBrightness(input::buttons[j].color, 4));
-        } else if(i == px-7) {
-          strip.setPixelColor(offsetPixelLocation(i+input::buttons[j].ledPosition), reduceBrightness(input::buttons[j].color, 4));
+        } else if(buttonsOn == 1) {
+          if(i == px) {
+            strip.setPixelColor(offsetPixelLocation(i+input::buttons[j].ledPosition-fadeInInterval), input::buttons[j].color);
+          } else if(i == offsetPixelLocation(px-1)) {
+            strip.setPixelColor(offsetPixelLocation(i+input::buttons[j].ledPosition-fadeInInterval), reduceBrightness(input::buttons[j].color, 2));
+          } else if(i == offsetPixelLocation(px-2)) {
+            strip.setPixelColor(offsetPixelLocation(i+input::buttons[j].ledPosition-fadeInInterval), reduceBrightness(input::buttons[j].color, 3));
+          } else if(i == offsetPixelLocation(px-3)) {
+            strip.setPixelColor(offsetPixelLocation(i+input::buttons[j].ledPosition-fadeInInterval), reduceBrightness(input::buttons[j].color, 4));
+          } else if(i == offsetPixelLocation(px-4)) {
+            strip.setPixelColor(offsetPixelLocation(i+input::buttons[j].ledPosition-fadeInInterval), reduceBrightness(input::buttons[j].color, 4));
+          } else if(i == offsetPixelLocation(px-5)) {
+            strip.setPixelColor(offsetPixelLocation(i+input::buttons[j].ledPosition-fadeInInterval), reduceBrightness(input::buttons[j].color, 5));
+          } else if(i == offsetPixelLocation(px-6)) {
+            strip.setPixelColor(offsetPixelLocation(i+input::buttons[j].ledPosition-fadeInInterval), reduceBrightness(input::buttons[j].color, 5));
+          } else if(i == offsetPixelLocation(px-7)) {
+            strip.setPixelColor(offsetPixelLocation(i+input::buttons[j].ledPosition-fadeInInterval), reduceBrightness(input::buttons[j].color, 5));
+          }
         }
       }
     }
   }
-}
 
-void callAnimation(int ticks) {
-  int color = ticks % 256;
-  int px = ticks % LED_COUNT;
-  clearStrip();
-  for(uint16_t i=0; i<LED_COUNT; i++) {
-    //strip.setPixelColor(i, wheel((i+color) & 255));
+  if(ticks >= fadeInInterval) {
     for(int j=0; j < input::BUTTON_COUNT; j++) {
       if (input::buttons[j].on) {
-        if(i == px) {
-          strip.setPixelColor(offsetPixelLocation(i+input::buttons[j].ledPosition), input::buttons[j].color);
+        if(ticks % 6 < 3) {
+          strip.setPixelColor(input::buttons[j].ledPosition+1, input::buttons[j].color);
+          strip.setPixelColor(input::buttons[j].ledPosition+2, input::buttons[j].color);
+          strip.setPixelColor(input::buttons[j].ledPosition+3, input::buttons[j].color);
+        } else {
+          strip.setPixelColor(input::buttons[j].ledPosition+1, strip.Color(0, 0, 0));
+          strip.setPixelColor(input::buttons[j].ledPosition+2, strip.Color(0, 0, 0));
+          strip.setPixelColor(input::buttons[j].ledPosition+3, strip.Color(0, 0, 0));
         }
       }
     }
@@ -213,7 +218,7 @@ uint32_t reduceBrightness(uint32_t c, int factor) {
     g = (uint8_t)(c >>  8),
     b = (uint8_t)c;
 
-  factor = 60 * factor;
+  factor = 50 * factor;
 
   // Serial.print("before: ");
   // Serial.print("r: ");
@@ -256,7 +261,7 @@ uint32_t wheel(byte WheelPos) {
 
 void clearStrip() {
   for(uint16_t i=0; i<strip.numPixels(); i++) {
-   strip.setPixelColor(i, strip.Color(0, 0, 0));
+    strip.setPixelColor(i, strip.Color(0, 0, 0));
   }
 }
 
@@ -278,7 +283,7 @@ void setup() {
   }
   strip.begin();
   strip.show(); // Initialize all pixels to 'off'
-  Serial.println("Setup Complete");
+  // Serial.println("Setup Complete");
 }
 
 void loop() {
