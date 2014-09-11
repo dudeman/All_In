@@ -95,6 +95,7 @@ namespace input {
 void update() {
   static long lastDebounceTime = 0;
   static int prevState = 0;
+  static bool resetState = false;
   static int ticks = 0;
   int buttonsOn = 0;
   // int framerate = map(analogRead(1), 0, 1023, 10, 100);
@@ -112,6 +113,7 @@ void update() {
 
   // reset state and ticks when state changes
   if(buttonsOn != prevState) {
+    resetState = (buttonsOn < prevState);
     prevState = buttonsOn;
     ticks = 0;
   }
@@ -120,8 +122,10 @@ void update() {
   // control the update framerate
   if ((millis() - lastDebounceTime) > framerate) {
     lastDebounceTime = millis();
-    if(buttonsOn > 0) {
+    if(buttonsOn > 0 && !resetState) {
       allInAnimation(ticks, buttonsOn);
+    } else if(buttonsOn > 0) {
+      resetAnimation(ticks);
     } else {
       clearStrip();
     }
@@ -182,6 +186,14 @@ void callAnimation(int ticks) {
         }
       }
     }
+  }
+}
+
+void resetAnimation(int ticks) {
+  int color = ticks % 256;
+  clearStrip();
+  for(uint16_t i=0; i<LED_COUNT; i++) {
+    strip.setPixelColor(i, wheel((i+color) & 255));
   }
 }
 
