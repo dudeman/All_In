@@ -26,18 +26,18 @@ namespace input {
 
   const int BUTTON_COUNT = 12;
   Button buttons[input::BUTTON_COUNT] = {
-    {22, 23, LOW, LOW, false, 0, COLOR_BLUE, 210},
-    {24, 25, LOW, LOW, false, 0, COLOR_GREEN, -30},
-    {26, 27, LOW, LOW, false, 0, COLOR_RED, -4},
-    {28, 29, LOW, LOW, false, 0, COLOR_WHITE, 10},
-    {30, 31, LOW, LOW, false, 0, COLOR_BLUE, 36},
-    {32, 33, LOW, LOW, false, 0, COLOR_GREEN, 64},
-    {34, 35, LOW, LOW, false, 0, COLOR_RED, 80},
-    {36, 37, LOW, LOW, false, 0, COLOR_WHITE, 102},
-    {38, 39, LOW, LOW, false, 0, COLOR_BLUE, 120},
-    {40, 41, LOW, LOW, false, 0, COLOR_GREEN, 144},
-    {42, 43, LOW, LOW, false, 0, COLOR_RED, 172},
-    {44, 45, LOW, LOW, false, 0, COLOR_WHITE, 200}
+    {22, 23, LOW, LOW, false, 0, COLOR_BLUE, 250},
+    {24, 25, LOW, LOW, false, 0, COLOR_GREEN, 2},
+    {26, 27, LOW, LOW, false, 0, COLOR_RED, 20},
+    {28, 29, LOW, LOW, false, 0, COLOR_WHITE, 48},
+    {30, 31, LOW, LOW, false, 0, COLOR_BLUE, 72},
+    {32, 33, LOW, LOW, false, 0, COLOR_GREEN, 98},
+    {34, 35, LOW, LOW, false, 0, COLOR_RED, 116},
+    {36, 37, LOW, LOW, false, 0, COLOR_WHITE, 136},
+    {38, 39, LOW, LOW, false, 0, COLOR_BLUE, 156},
+    {40, 41, LOW, LOW, false, 0, COLOR_GREEN, 180},
+    {42, 43, LOW, LOW, false, 0, COLOR_RED, 208},
+    {44, 45, LOW, LOW, false, 0, COLOR_WHITE, 234}
   };
 
   void setup(Button button) {
@@ -132,9 +132,11 @@ void update() {
 void allInAnimation(int ticks, int buttonsOn) {
   int color = ticks % 256;
   int px = ticks % LED_COUNT;
+  int fadeInInterval = 32;
   clearStrip();
-  if(ticks < 32) {
-    strip.setBrightness(8 * ticks+1 % 256);
+
+  if(ticks < fadeInInterval) {
+    strip.setBrightness((256 / fadeInInterval) * ticks+1 % 256);
   }
   for(uint16_t i=0; i<LED_COUNT; i++) {
     if(buttonsOn > 1) {
@@ -143,6 +145,7 @@ void allInAnimation(int ticks, int buttonsOn) {
     for(int j=0; j < input::BUTTON_COUNT; j++) {
       if (input::buttons[j].on) {
         if(ticks < 32 && i % 2 == px % 2) {
+        if(ticks < fadeInInterval && i % 2 == px % 2) {
           strip.setPixelColor(i, input::buttons[j].color);
         } else if(i == px) {
           strip.setPixelColor(offsetPixelLocation(i+input::buttons[j].ledPosition), input::buttons[j].color);
