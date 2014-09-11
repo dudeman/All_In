@@ -40,8 +40,6 @@ namespace input {
     {44, 45, LOW, LOW, false, 0, COLOR_WHITE, 200}
   };
 
-  Button lastButtonPressed;
-
   void setup(Button button) {
     pinMode(button.ledPin, OUTPUT);
     // pinMode(button.inputPin, INPUT);
@@ -72,7 +70,6 @@ namespace input {
           button->on = !button->on;
           if(button->on) {
             digitalWrite(button->ledPin, HIGH);
-            lastButtonPressed = *button;
           } else {
             digitalWrite(button->ledPin, LOW);
           }
