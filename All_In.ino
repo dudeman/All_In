@@ -29,15 +29,15 @@ namespace input {
     {22, 23, LOW, LOW, false, 0, COLOR_BLUE, 250},
     {24, 25, LOW, LOW, false, 0, COLOR_GREEN, 2},
     {26, 27, LOW, LOW, false, 0, COLOR_RED, 20},
-    {28, 29, LOW, LOW, false, 0, COLOR_WHITE, 48},
-    {30, 31, LOW, LOW, false, 0, COLOR_BLUE, 72},
+    {28, 29, LOW, LOW, false, 0, COLOR_WHITE, 46},
+    {30, 31, LOW, LOW, false, 0, COLOR_BLUE, 73},
     {32, 33, LOW, LOW, false, 0, COLOR_GREEN, 98},
-    {34, 35, LOW, LOW, false, 0, COLOR_RED, 116},
-    {36, 37, LOW, LOW, false, 0, COLOR_WHITE, 136},
-    {38, 39, LOW, LOW, false, 0, COLOR_BLUE, 156},
-    {40, 41, LOW, LOW, false, 0, COLOR_GREEN, 180},
+    {34, 35, LOW, LOW, false, 0, COLOR_RED, 115},
+    {36, 37, LOW, LOW, false, 0, COLOR_WHITE, 138},
+    {38, 39, LOW, LOW, false, 0, COLOR_BLUE, 154},
+    {40, 41, LOW, LOW, false, 0, COLOR_GREEN, 181},
     {42, 43, LOW, LOW, false, 0, COLOR_RED, 208},
-    {44, 45, LOW, LOW, false, 0, COLOR_WHITE, 234}
+    {44, 45, LOW, LOW, false, 0, COLOR_WHITE, 233}
   };
 
   void setup(Button button) {
@@ -181,13 +181,17 @@ void allInAnimation(int ticks, int buttonsOn) {
     for(int j=0; j < input::BUTTON_COUNT; j++) {
       if (input::buttons[j].on) {
         if(ticks % 6 < 3) {
-          strip.setPixelColor(input::buttons[j].ledPosition+1, input::buttons[j].color);
           strip.setPixelColor(input::buttons[j].ledPosition+2, input::buttons[j].color);
           strip.setPixelColor(input::buttons[j].ledPosition+3, input::buttons[j].color);
+          strip.setPixelColor(input::buttons[j].ledPosition+4, input::buttons[j].color);
+          strip.setPixelColor(input::buttons[j].ledPosition+5, input::buttons[j].color);
+          strip.setPixelColor(input::buttons[j].ledPosition+6, input::buttons[j].color);
         } else {
-          strip.setPixelColor(input::buttons[j].ledPosition+1, strip.Color(0, 0, 0));
           strip.setPixelColor(input::buttons[j].ledPosition+2, strip.Color(0, 0, 0));
           strip.setPixelColor(input::buttons[j].ledPosition+3, strip.Color(0, 0, 0));
+          strip.setPixelColor(input::buttons[j].ledPosition+4, strip.Color(0, 0, 0));
+          strip.setPixelColor(input::buttons[j].ledPosition+5, strip.Color(0, 0, 0));
+          strip.setPixelColor(input::buttons[j].ledPosition+6, strip.Color(0, 0, 0));
         }
       }
     }
@@ -200,6 +204,28 @@ void resetAnimation(int ticks) {
   for(uint16_t i=0; i<LED_COUNT; i++) {
     strip.setPixelColor(i, wheel((i+color) & 255));
   }
+
+  for(int j=0; j < input::BUTTON_COUNT; j++) {
+    if (input::buttons[j].on) {
+      if(ticks % 6 < 3) {
+        strip.setPixelColor(input::buttons[j].ledPosition+2, input::buttons[j].color);
+        strip.setPixelColor(input::buttons[j].ledPosition+3, input::buttons[j].color);
+        strip.setPixelColor(input::buttons[j].ledPosition+4, input::buttons[j].color);
+        strip.setPixelColor(input::buttons[j].ledPosition+5, input::buttons[j].color);
+        strip.setPixelColor(input::buttons[j].ledPosition+6, input::buttons[j].color);
+      } else {
+        strip.setPixelColor(input::buttons[j].ledPosition+2, strip.Color(0, 0, 0));
+        strip.setPixelColor(input::buttons[j].ledPosition+3, strip.Color(0, 0, 0));
+        strip.setPixelColor(input::buttons[j].ledPosition+4, strip.Color(0, 0, 0));
+        strip.setPixelColor(input::buttons[j].ledPosition+5, strip.Color(0, 0, 0));
+        strip.setPixelColor(input::buttons[j].ledPosition+6, strip.Color(0, 0, 0));
+      }
+    }
+  }
+}
+
+void restAnimation(int ticks) {
+  clearStrip();
 }
 
 int offsetPixelLocation(int offsetPosition) {
